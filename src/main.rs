@@ -21,9 +21,11 @@ use std::io::BufReader;
 use std::io::Write;
 
 #[derive(Serialize,Deserialize)]
-struct InputConfig {
-    text: Option<String>,
-    ssml: Option<String>,
+enum InputConfig {
+    #[serde(rename = "text")]
+    Text(String),
+    #[serde(rename = "ssml")]
+    Ssml(String)
 }
 
 #[derive(Serialize,Deserialize)]
@@ -264,10 +266,7 @@ fn synthesize(args: &ArgMatches) {
     let params = vec![("key", api_key)];
 
     let data = SynthesizeRequest {
-        input: InputConfig {
-            ssml: Some(String::from(synthesize_input)),
-            text: None,
-        },
+        input: InputConfig::Ssml(String::from(synthesize_input)),
         voice: VoiceConfig {
             language_code: String::from(language), // https://cloud.google.com/speech/docs/languages
             name: String::from(voice_name), // en-US-Wavenet-C (female)
